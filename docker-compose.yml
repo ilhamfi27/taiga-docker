@@ -32,8 +32,8 @@ x-environment:
 x-volumes:
   &default-back-volumes
   # These volumens will be used by taiga-back and taiga-async.
-  - taiga-static-data:/taiga-back/static
-  - taiga-media-data:/taiga-back/media
+  - ./volumes/static-data:/taiga-back/static
+  - ./volumes/media-data:/taiga-back/media
   # - ./config.py:/taiga-back/settings/config.py
 
 services:
@@ -50,7 +50,7 @@ services:
       retries: 5
       start_period: 3s
     volumes:
-      - taiga-db-data:/var/lib/postgresql/data
+      - ./volumes/db-data:/var/lib/postgresql/data
     networks:
       - taiga
 
@@ -92,7 +92,7 @@ services:
       RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_VHOST}"
     hostname: "taiga-async-rabbitmq"
     volumes:
-      - taiga-async-rabbitmq-data:/var/lib/rabbitmq
+      - ./volumes/async-rabbitmq-data:/var/lib/rabbitmq
     networks:
       - taiga
 
@@ -129,7 +129,7 @@ services:
       RABBITMQ_DEFAULT_VHOST: "${RABBITMQ_VHOST}"
     hostname: "taiga-events-rabbitmq"
     volumes:
-      - taiga-events-rabbitmq-data:/var/lib/rabbitmq
+      - ./volumes/events-rabbitmq-data:/var/lib/rabbitmq
     networks:
       - taiga
 
@@ -147,21 +147,14 @@ services:
       - "9000:80"
     volumes:
       - ./taiga-gateway/taiga.conf:/etc/nginx/conf.d/default.conf
-      - taiga-static-data:/taiga/static
-      - taiga-media-data:/taiga/media
+      - ./volumes/static-data:/taiga/static
+      - ./volumes/media-data:/taiga/media
     networks:
       - taiga
     depends_on:
       - taiga-front
       - taiga-back
       - taiga-events
-
-volumes:
-  taiga-static-data:
-  taiga-media-data:
-  taiga-db-data:
-  taiga-async-rabbitmq-data:
-  taiga-events-rabbitmq-data:
 
 networks:
   taiga:
